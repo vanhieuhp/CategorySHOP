@@ -1,0 +1,44 @@
+package com.vanhieu.controller.web;
+
+import com.vanhieu.dto.CategoryDto;
+import com.vanhieu.dto.ItemDto;
+import com.vanhieu.service.ICategoryService;
+import com.vanhieu.service.IItemService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
+@Controller
+public class ShopGridController {
+
+    @Autowired
+    private IItemService itemService;
+
+    @Autowired
+    private ICategoryService categoryService;
+
+    @GetMapping("/WEBPAGE/shopGrid")
+    public String showShopGrid(Model model, HttpServletRequest request) {
+
+        ItemDto items = new ItemDto();
+        Pageable pageable = PageRequest.of(0, 8);
+        items.setListResult(itemService.findAll(pageable));
+        List<CategoryDto> categories = categoryService.findAll();
+
+        if (request.getParameter("id") != null) {
+            String id = request.getParameter("id") + "_category";
+            model.addAttribute("categoryId", id);
+        }
+
+        model.addAttribute("categories", categories);
+        model.addAttribute("items", items);
+        model.addAttribute("active", "idShopGrid");
+        return "/views/web/shopGrid";
+    }
+}

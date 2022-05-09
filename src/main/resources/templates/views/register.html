@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="decorators/admin :: headerFragment"></div>
+    <title>Register an account!</title>
+</head>
+<body class="bg-gradient-primary">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-xl-7">
+            <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="col-lg-12  p-lg-5">
+                    <div th:if="${param.error_password}">
+                        <div class="alert alert-warning" role="alert">
+                            Password do not match!
+                        </div>
+                    </div>
+                    <div th:if="${param.success}">
+                        <div class="alert alert-success" role="alert">
+                            You have been registered an account!
+                        </div>
+                    </div>
+                    <div th:if="${param.error_system}">
+                        <div class="alert alert-danger" role="alert">
+                            Error system, please try again!
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
+                    </div>
+                    <form method="post" id="formSubmit" class="user">
+                        <div class="form-group row">
+                            <div class="col-sm-6 mb-3 mb-sm-0">
+                                <input class="form-control form-control-user" name="username" id="username" placeholder="User name" required autofocus type="text"/>
+                            </div>
+                            <div class="col-sm-6">
+                                <input class="form-control form-control-user" name="fullname" id="fullname" placeholder="Full Name" required type="text"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control form-control-user" name="email" id="email" placeholder="Email Address" required type="email"/>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-6 mb-3 mb-sm-0">
+                                <input class="form-control form-control-user" name="password" id="password" placeholder="Password" type="password" required/>
+                            </div>
+                            <div class="col-sm-6">
+                                <input class="form-control form-control-user" value="" id="repeatPassword" placeholder="Repeat Password" type="password" required/>
+                            </div>
+                        </div>
+                        <button type="button" id="RegisterButton" class="btn btn-primary btn-user btn-block">Register Account</button>
+                        <hr>
+                        <a class="btn btn-google btn-user btn-block" href="#">
+                            <i class="fab fa-google fa-fw"></i> Register with Google
+                        </a>
+                        <a class="btn btn-facebook btn-user btn-block" href="#">
+                            <i class="fab fa-facebook-f fa-fw"></i> Register with Facebook
+                        </a>
+                    </form>
+                    <hr>
+                    <div class="text-center">
+                        <a class="small" th:href="@{/forgotPassword}">Forgot Password?</a>
+                    </div>
+                    <div class="text-center">
+                        <a class="small" th:href="@{/login}">Already have an account? Login!</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- Bootstrap core JavaScript-->
+<div th:replace="decorators/admin :: adminScript"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+<script th:inline="javascript">
+
+    $("#RegisterButton").click(function (e) {
+        var password = $("#password").val();
+        var repeatPassword = $("#repeatPassword").val();
+        if (password != repeatPassword) {
+            window.location.href = "/register?error_password";
+        }
+        e.preventDefault();
+        var data = {};
+        var formData = $("#formSubmit").serializeArray();
+        $.each(formData, function (i, v) {
+            data[""+v.name+""] = v.value;
+            console.log(v.name + ": " + v.value);
+        })
+        add(data);
+    });
+
+    function add(data) {
+        alert("ajax access!");
+        $.ajax({
+            url: '/api/user',
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(data),
+            dataType: 'json',
+            success: function (result) {
+                window.location.href = "/register?success";
+            },
+            error: function (error) {
+                window.location.href = "/register?error_system";
+
+            }
+        });
+    }
+</script>
+</body>
+</html>

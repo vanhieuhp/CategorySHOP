@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{decorators/web.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+</head>
+<body>
+<div layout:fragment="content">
+    <!-- Hero Section End -->
+
+    <!-- Breadcrumb Section Begin -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Checkout</h2>
+                    <div class="breadcrumb__option">
+                        <a th:href="@{/WEBPAGE}">Home </a>
+                        <span>Checkout</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb Section End -->
+
+    <!-- Checkout Section Begin -->
+    <section class="checkout spad">
+        <div class="container">
+            <div class="checkout__form">
+                <h4>Billing Details</h4>
+                <form id="formSubmit" >
+                    <div class="row">
+                        <div class="col-lg-8 col-md-6">
+                            <div class="checkout__input">
+                                <p>Address<span>*</span></p>
+                                <input id="address" name="address" class="checkout__input__add" placeholder="Street Address" required autofocus type="text">
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="checkout__input">
+                                        <p>Phone<span>*</span></p>
+                                        <input id="phoneNumber" name="phoneNumber" type="number" class="checkout__input__add" required placeholder="Phone Number">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="checkout__input">
+                                        <p>Email<span>*</span></p>
+                                        <input id="email" name="email" type="email" class="checkout__input__add" required placeholder="Email">
+                                    </div>
+                                </div>
+                                <select class="delivery" id="delivery"  name="delivery">
+                                    <option value="">Choose Delivery</option>
+                                    <option value="fastDelivery">Fast Delivery</option>
+                                    <option value="saveDelivery">Save Delivery</option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="checkout__order">
+                                <h4>Your Order</h4>
+                                <div class="checkout__order__products">Products <span>Total</span></div>
+                                <ul>
+                                    <li th:each="item : ${carts}">[[${item.itemDto.name}]]<span>$[[${item.total}]]</span></li>
+                                </ul>
+                                <div class="checkout__order__subtotal" >Subtotal <input id="subTotal" class="total" disabled name="subTotal" th:value="'$'+${sum}" /></div>
+                                <div class="checkout__order__total" > Total <input id="total" disabled class="total" th:value="'$'+${sum}"/></div>
+                                <select class="myPayment" id="payment" name="payment">
+                                    <option value="">Your Payment</option>
+                                    <option id="cash" value="cash">Cash</option>
+                                    <option id="card"  value="card">Card</option>
+                                </select>
+                                <a href="/WEBPAGE/shopGrid" class="buyMore site-btn" id="buyMore" style="color: #fff;">buy more</a>
+                                <button id="bOrder" onclick="order(this.id)" class="site-btn" type="button">Order</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    <script crossorigin="anonymous"
+            integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
+    <script th:inline="javascript">
+        function order(id) {
+            var checkOrder = true;
+            var formData = $("#formSubmit").serializeArray();
+            $.each(formData, function(i, v) {
+                if (v.value == "") {
+                    Swal.fire({
+                        title: 'You must enter all the fields',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        showConfirmButton: false,
+                        cancelButtonColor: '#dd2222',
+                        cancelButtonText: 'Ok'
+                    })
+                    checkOrder = false;
+                    return false;
+                }
+            });
+            if (!checkEmail()) {
+                checkOrder = false;
+            }
+            if (checkOrder) {
+                var data = {};
+                var total = $("#total").val();
+                total = total.substring(1);
+                data["username"] = [[${#httpServletRequest.remoteUser}]];
+                data["total"] = total;
+                $.each(formData, function (i, v) {
+                    data[""+v.name+""] = v.value;
+                })
+                add(data);
+            }
+        }
+
+        function checkEmail() {
+            var email = $("#email").val();
+            var check = typeof email.checkValidity === 'function' ? email.checkValidity() : /\S+@\S+\.\S+/.test(email);
+            if (!check) {
+                Swal.fire({
+                    title: 'your email is not match format!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    showConfirmButton: false,
+                    cancelButtonColor: '#dd2222',
+                    cancelButtonText: 'Ok'
+                });
+                return false;
+            }else {
+                return true;
+            }
+        }
+
+        function add(data) {
+            $.ajax({
+                url: '/api/bill',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                success: function (result) {
+                    Swal.fire({
+                        title: 'Order successfully',
+                        text: 'Comeback Home',
+                        icon: 'success',
+                        showCancelButton: false,
+                        showConfirmButton: true,
+                        confirmButtonColor: '#7fad39',
+                        confirmButtonText: 'Ok'
+                    });
+                    window.location.href = "/WEBPAGE";
+                },
+                error: function (error) {
+                    Swal.fire({
+                        title: 'Error System!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        showConfirmButton: false,
+                        cancelButtonColor: '#dd2222',
+                        cancelButtonText: 'Ok'
+                    });
+                }
+            });
+        }
+
+    </script>
+</div>
+</body>
+</html>

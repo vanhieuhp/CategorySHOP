@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+
+</head>
+<body>
+<div th:fragment="header">
+    <header class="header">
+        <div class="header__top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="header__top__left">
+                            <ul>
+                                <li><i class="fa fa-envelope"></i> vanhieuit10@gmail.com</li>
+                                <li>Free Shipping for all Order of $99</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="header__top__right">
+                            <div class="header__top__right__social">
+                                <a href="#"><i class="fa fa-facebook"></i></a>
+                                <a href="#"><i class="fa fa-twitter"></i></a>
+                                <a href="#"><i class="fa fa-linkedin"></i></a>
+                                <a href="#"><i class="fa fa-pinterest-p"></i></a>
+                            </div>
+                            <div class="header__top__right__language">
+                                <img th:src="@{/web/img/language.png}" alt="">
+                                <div>English</div>
+                                <span class="arrow_carrot-down"></span>
+                                <ul>
+                                    <li><a href="#">Spanis</a></li>
+                                    <li><a href="#">English</a></li>
+                                </ul>
+                            </div>
+                            <div sec:authorize="isAuthenticated()" class="header__top__right__language">
+                                <div style="font-size: 16px">[[${#httpServletRequest.remoteUser}]]</div>
+                                <ul>
+                                    <li><a href="#"><i class="fa fa-user"></i> Profile</a></li>
+                                    <li><a th:href="@{/WEBPAGE/shoppingCart}"><i class="fa fa-cart-plus"></i> Cart</a></li>
+                                    <li><a th:href="@{/logout}"><i class="fa fa-sign-out"></i> Logout</a></li>
+                                </ul>
+                            </div>
+                            <div sec:authorize="isAnonymous()" class="header__top__right__auth text-body" >
+                                <a th:href="@{/login}" style="font-size: 16px; font-weight: 700" >Log in</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="header__logo">
+                        <a th:href="@{/WEBPAGE}"><img th:src="@{/web/img/logo.png}" alt=""></a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <nav class="header__menu">
+                        <ul>
+                            <li id="idHome" ><a th:href="@{/WEBPAGE}">Home</a></li>
+                            <li id="idShopGrid" ><a th:href="@{/WEBPAGE/shopGrid}">Shop</a></li>
+                            <li id="idShopCart" ><a >Pages</a>
+                                <ul class="header__menu__dropdown">
+                                    <li><a th:href="@{/WEBPAGE/shoppingCart}">Shopping Cart</a></li>
+<!--                                    <li><a th:href="@{/WEBPAGE/checkout}">Check Out</a></li>-->
+                                    <li><a th:href="@{/blog-details.html}">Blog Details</a></li>
+                                </ul>
+                            </li>
+                            <li id="idBlog" ><a href="./blog.html">Blog</a></li>
+                            <li id="idContact" ><a href="./contact.html">Contact</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-lg-3">
+                    <div class="header__cart">
+                        <ul>
+                            <li><a th:href="@{/WEBPAGE/shoppingCart}">
+                                <i class="fa fa-shopping-bag"></i>
+                                <th:block th:if="${carts != null}">
+                                    <span>[[${carts.size}]]</span>
+                                </th:block>
+                            </a></li>
+                        </ul>
+                        <a class="header__cart__price" th:unless="${carts != null}" th:href="@{/WEBPAGE/shoppingCart}">
+                            <span>Shopping Cart</span>
+                        </a>
+                        <span class="header__cart__price" th:if="${carts != null}">Total: $[[${sum}]]</span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="humberger__open">
+                <i class="fa fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <script crossorigin="anonymous"
+            integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
+    <script th:inline="javascript">
+        var active = [[${active}]];
+        var element = document.getElementById(active);
+        element.classList.add("active");
+    </script>
+</div>
+</body>
+</html>

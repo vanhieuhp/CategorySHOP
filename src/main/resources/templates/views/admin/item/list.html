@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{decorators/admin.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Category list</title>
+</head>
+<body>
+<div class="container-fluid card-body" layout:fragment="content">
+    <form th:action="@{/ADMIN/item/list}" method="get" id="formSubmit">
+        <div th:if="${message != null}" th:class="'alert alert-' + ${alert}" role="alert">[[${message}]]</div>
+        <table class="table table-bordered shadow">
+            <tr>
+                <th><input data-toggle="tooltip" th:id="selectAll" title="Select All" type="checkbox"/></th>
+                <th>Id</th>
+                <th>image</th>
+                <th>Name</th>
+                <th>category</th>
+                <th>price</th>
+                <th>
+                    <a class="btn btn-primary btn-user" data-toggle="tooltip" th:href="@{/ADMIN/item/edit?limit=5}"
+                       title="Add news">
+                        <i class="fas fa-plus-circle"></i>
+                    </a>
+                </th>
+                <th>
+                    <button class="btn btn-danger btn-user" data-toggle="tooltip" id="btnDelete"
+                            onclick="warningBeforeDelete()" title="Delete News" type="button">
+                        <i class='fas fa-trash-alt'></i>
+                    </button>
+                </th>
+            </tr>
+            <tbody>
+            <th:block th:each="item : ${itemModel.getListResult()}">
+                <tr>
+                    <td>
+                        <input data-toggle="tooltip" th:id="'checkbox_' + ${item.id}"
+                               th:title="'Select item ' + ${item.id}"
+                               th:value="${item.id}" type="checkbox" name="select">
+                    </td>
+                    <td>[[${item.id}]]</td>
+                    <td>[[${item.image}]]</td>
+                    <td>[[${item.name}]]</td>
+                    <td>[[${item.categoryCode}]]</td>
+                    <td>[[${item.price}]]</td>
+                    <td>
+                        <a class="btn btn-primary btn-user" data-toggle="tooltip"
+                           th:href="@{'/ADMIN/item/edit?id=' + ${item.id} + '&limit=5'}"
+                           title="Edit news"> <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+        <input type="hidden" value="" name="page" id="page"/>
+        <input type="hidden" value="" name="limit" id="limit"/>
+        <ul class="pagination" id="pagination"></ul>
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+    <script th:inline="javascript">
+        var currentPage = [[${itemModel.page}]];
+        var totalPage = [[${itemModel.totalPage}]]
+        $(function () {
+            window.pagObj = $('#pagination').twbsPagination({
+                totalPages: totalPage,
+                visiblePages: 5,
+                startPage: currentPage,
+                onPageClick: function (event, page) {
+                    if (page != currentPage) {
+                        document.getElementById("page").setAttribute('value', page),
+                            document.getElementById("limit").setAttribute('value', 5),
+                            window.location.href +
+                            $("#formSubmit").submit();
+                    }
+                }
+            });
+        });
+
+        function warningBeforeDelete() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var ids = $('tbody input[name="select"]:checked').map(function () {
+                        return $(this).val();
+                    }).get();
+                    deletes(ids);
+                }
+            })
+        }
+
+        function deletes(data) {
+            $.ajax({
+                url: '/api/item',
+                type: 'DELETE',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                success: function (result) {
+                    Swal.fire(
+                        'Deleted!',
+                        'Your file has been deleted.',
+                        'success'
+                    ).then(function (e) {
+                        window.location.href = "/ADMIN/item/list?message=delete_success&page=" + currentPage + "&limit=5";
+                    })
+                },
+                error: function (error) {
+                    Swal.fire(
+                        'Error system!'
+                    ).then(function (e) {
+                        window.location.href = "/ADMIN/item/list?message=error_system&page=" + currentPage + "&limit=5";
+                    })
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            $('#selectAll').change(function() {
+                $("input:checkbox").prop('checked', $(this).prop("checked"));
+            })
+        })
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{decorators/admin.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Item</title>
+</head>
+<body>
+<div class="container-fluid card-body" layout:fragment="content">
+  <div>
+    <div class="row justify-content-center">
+      <form id="formSubmit" class="shadow col-lg-6"  method="post">
+        <div  class="card-body text-center">
+          <h3 th:if="${categoryModel.id != null}" class="m-0 font-weight-bold text-dark">Update category</h3>
+          <h3 th:if="${categoryModel.id == null}" class="m-0 font-weight-bold text-dark">Add new category</h3>
+        </div>
+        <div class="card-group">
+          <h6 class="m-0 font-weight-bold text-dark">Name</h6>
+          <input class="form-control" id="name" name="name" placeholder="Name of category" th:value="${categoryModel.name}"/>
+        </div>
+        <br>
+        <div >
+          <h6 class="m-0 font-weight-bold text-dark">Category Code</h6>
+          <input class="form-control" id="code" name="code" placeholder="Code of category" th:value="${categoryModel.code}"/>
+        </div>
+        <br>
+        <div >
+          <h6 class="m-0 font-weight-bold text-dark">Image</h6>
+          <input class="form-control" id="image" name="image" placeholder="Image of category" th:value="${categoryModel.image}"/>
+        </div>
+        <br>
+        <input th:value="${categoryModel.id}" type="hidden" id="id"/>
+        <br>
+        <div class="row justify-content-center card-body">
+          <div th:if="${categoryModel.id} != null" class="card-header flex-row align-items-center">
+            <input class="btn btn-primary btn-user" type="button" value="Update category" id="btnMulti"/>
+          </div>
+
+          <div th:if="${categoryModel.id} == null" class="card-header flex-row align-items-center">
+            <input class="btn btn-primary btn-user" id="btnMulti" type="button" value="Add category"/>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+  <script th:inline="javascript">
+    $("#btnMulti").click(function (e) {
+      e.preventDefault();
+      var data = {};
+      var formData = $("#formSubmit").serializeArray();
+
+      $.each(formData, function (i, v) {
+        data[""+v.name+""] = v.value;
+        console.log(v.name + ": " + v.value);
+      });
+      var id = $("#id").val();
+      if (id == "") {
+        add(data);
+      } else {
+        data["id"] = id;
+        update(data);
+      }
+    });
+
+
+    function add(data) {
+      $.ajax({
+        url: '/api/category',
+        type: 'POST',
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(data),
+        dataType: 'json',
+        success: function (result) {
+          window.location.href = "/ADMIN/category/list?message=insert_success";
+        },
+        error: function (error) {
+          window.location.href = "/ADMIN/category/list?message=error_system";
+        }
+      });
+    }
+
+    function update(data) {
+      console.log(data);
+      $.ajax({
+        url: '/api/category',
+        type: 'PUT',
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(data),
+        dataType: 'json',
+        success: function (result) {
+          console.log(data);
+          window.location.href = "/ADMIN/category/list?message=update_success";
+        },
+        error: function (error) {
+          window.location.href = "/ADMIN/category/list?message=error_system";
+        }
+      });
+    }
+  </script>
+</div>
+</body>
+</html>

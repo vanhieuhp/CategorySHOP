@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{decorators/admin.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Item</title>
+</head>
+<body>
+<div class="container-fluid card-body" layout:fragment="content">
+    <div>
+        <div class="row justify-content-center">
+            <form id="formSubmit" class="shadow col-lg-12">
+                <div class="card-body text-center">
+                    <h3 class="m-0 font-weight-bold text-dark">Add new item</h3>
+                </div>
+                <div class="card-group">
+                    <h6 class="m-0 font-weight-bold text-dark">Image</h6>
+                    <input class="form-control" id="image" name="image" placeholder="Name of image" th:value="${blogModel.image}"/>
+                </div>
+                <br>
+
+                <div>
+                    <h6 class="m-0 font-weight-bold text-dark">Title</h6>
+                    <input class="form-control" id="title" name="title" placeholder="Title" th:value="${blogModel.title}"/>
+                </div>
+                <br>
+
+                <div>
+                    <h6 class="m-0 font-weight-bold text-dark">Short Description</h6>
+                    <textarea class="form-control" id="shortDescription" name="shortDescription" th:text="${blogModel.shortDescription}" />
+                </div>
+                <br>
+
+                <div>
+                    <h6 class="m-0 font-weight-bold text-dark">Content</h6>
+                <textarea class="form-control" id="contents" name="contents" th:text="${blogModel.content}"/>
+                </div>
+                <br>
+
+                <div >
+                    <h6 class="m-0 font-weight-bold text-dark">Kind of category</h6>
+                    <select class="form-control" id="categoryId" name="categoryId">
+                        <option value="">Select category</option>
+                        <option th:each="category : ${categories}"
+                                th:value="${category.id}"
+                                th:selected="${category.id == blogModel.categoryId}"
+                                th:text="${category.name}">
+                        </option>
+                    </select>
+                </div>
+                <input type="hidden" id="id" th:value="${blogModel.id}"/>
+                <input type="hidden" id="username" name="username" th:value="${#httpServletRequest.remoteUser}"/>
+                <br>
+                <br>
+                <div class="row justify-content-center card-body">
+                    <div th:if="${blogModel.id} != null" class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <input class="btn btn-primary btn-user" type="button" value="Update Blog" id="btnAddOrUpdate"/>
+                    </div>
+                    <div th:if="${blogModel.id} == null" class="card-header flex-row align-items-center">
+                        <input class="btn btn-primary btn-user" id="btnAddOrUpdate" type="button" value="Add Blog"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+    <script th:inline="javascript">
+
+        var editor = CKEDITOR.replace('contents');
+
+        var currentPage = [[${blogModel.page}]];
+        $("#btnAddOrUpdate").click(function (e) {
+            e.preventDefault();
+            var data = {};
+            var formData = $("#formSubmit").serializeArray();
+
+            $.each(formData, function (i, v) {
+                data[""+v.name+""] = v.value;
+            })
+
+            data['content'] = editor.getData();
+
+            var id = $("#id").val();
+            if (id == "") {
+                add(data);
+            } else {
+                data["id"] = id;
+                update(data);
+            }
+            console.log(data);
+        });
+
+
+        function add(data) {
+            console.log("add");
+            $.ajax({
+                url: '/api/blog',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                success: function (result) {
+                    window.location.href = "/ADMIN/blog/list?message=insert_success&limit=5&page=" + currentPage;
+                },
+                error: function (error) {
+                    window.location.href = "/ADMIN/blog/list?message=error_system&limit=5&page=" + currentPage;
+                }
+            });
+        }
+
+        function update(data) {
+            console.log("update");
+
+            $.ajax({
+                url: '/api/blog',
+                type: 'PUT',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                success: function (result) {
+                    window.location.href = "/ADMIN/blog/list?message=update_success&limit=5&page=" + currentPage;
+                },
+                error: function (error) {
+                    window.location.href = "/ADMIN/blog/list?message=error_system&limit=5&page=" + currentPage;
+                }
+            });
+        }
+    </script>
+</div>
+</body>
+</html>

@@ -5,6 +5,7 @@ import com.vanhieu.dto.MyUser;
 import com.vanhieu.dto.UserDto;
 import com.vanhieu.service.ICartService;
 import com.vanhieu.service.IUserService;
+import com.vanhieu.util.ViewModelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -25,9 +26,7 @@ public class ShoppingCartController {
 
     @GetMapping("/WEBPAGE/shoppingCart")
     public String showShoppingCart(Model model) {
-        MyUser test = (MyUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserDto user = userService.getUserByUsername(test.getUsername());
-        List<CartDto> carts = cartService.findByUserid(user.getId());
+        List<CartDto> carts = cartService.findByUserid(ViewModelUtils.getUser().getId());
         Collections.reverse(carts);
         int sum = 0;
         for (CartDto cart : carts) {

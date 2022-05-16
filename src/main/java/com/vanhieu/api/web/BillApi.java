@@ -6,6 +6,7 @@ import com.vanhieu.entity.BillEntity;
 import com.vanhieu.service.IBillService;
 import com.vanhieu.service.ICartService;
 import com.vanhieu.service.IUserService;
+import com.vanhieu.util.ViewModelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,17 +20,15 @@ public class BillApi {
     private IBillService billService;
 
     @Autowired
-    private IUserService userService;
-
-    @Autowired
     private ICartService cartService;
 
     @PostMapping("/api/bill")
     public BillDto createBill(@RequestBody BillDto billDto) {
-        UserDto user = userService.getUserByUsername(billDto.getUsername());
-        billDto.setUserId(user.getId());
-        billDto = billService.save(billDto);
-        cartService.payments(user.getId());
+        if (ViewModelUtils.getUser() != null) {
+            billDto.setUserId(ViewModelUtils.getUser().getId());
+            billDto = billService.save(billDto);
+            cartService.payments(ViewModelUtils.getUser().getId());
+        }
         return billDto;
     }
 

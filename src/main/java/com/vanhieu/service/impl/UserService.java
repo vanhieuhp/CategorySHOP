@@ -10,6 +10,7 @@ import com.vanhieu.repository.UserRepository;
 import com.vanhieu.security.SecuredPasswordGenerator;
 import com.vanhieu.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,9 +32,29 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public UserDto getUserByUsername(String username) {
-        UserEntity userEntity = userRepository.getUserByUsername(username);
-        UserDto userDto = userConverter.toDto(userEntity);
-        return userDto;
+        UserEntity userEntity = userRepository.getUserByUsername(username, 1);
+        if (userEntity != null) {
+            return userConverter.toDto(userEntity);
+        }
+        return null;
+    }
+
+    @Override
+    public UserDto getUserByEmail(String email) {
+        UserEntity userEntity = userRepository.getUserByEmail(email, 1);
+        if (userEntity != null) {
+            return userConverter.toDto(userEntity);
+        }
+        return null;
+    }
+
+    @Override
+    public UserDto getUserByUsernameAndEmail(String username, String email) {
+        UserEntity userEntity = userRepository.getUserByUsernameAndEmail(username , email, 1);
+        if (userEntity != null) {
+            return userConverter.toDto(userEntity);
+        }
+        return null;
     }
 
     @Override
@@ -64,5 +85,13 @@ public class UserService implements IUserService {
         UserEntity entity = userRepository.getOne(id);
         UserDto dto = userConverter.toDto(entity);
         return dto;
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(UserDto userDto, String password) {
+        UserEntity userEntity = userRepository.getUserByUsernameAndEmail(userDto.getUsername(), userDto.getEmail(), 1);
+        userEntity.setPassword(SecuredPasswordGenerator.generator(password));
+        userRepository.save(userEntity);
     }
 }

@@ -7,6 +7,7 @@ import com.vanhieu.dto.UserDto;
 import com.vanhieu.service.ICartService;
 import com.vanhieu.service.ICategoryService;
 import com.vanhieu.service.IUserService;
+import com.vanhieu.util.ViewModelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -31,25 +32,16 @@ public class CheckoutController {
     private IUserService userService;
 
     @GetMapping("/WEBPAGE/checkout")
-    public String CheckoutPage(Model model, HttpServletRequest request) {
-
-        if (request.getParameter("user") != null) {
-
-            List<CategoryDto> categories = new ArrayList<>();
-            categories = categoryService.findAll();
-            model.addAttribute("categories", categories);
-
-            String user = request.getParameter("user");
-            UserDto userDto = userService.getUserByUsername(user);
-            List<CartDto> carts = cartService.findByUserid(userDto.getId());
-            int sum = 0;
-            for (CartDto cart : carts) {
-                sum += cart.getTotal();
-            }
-
-            model.addAttribute("carts", carts);
-            model.addAttribute("sum", sum);
+    public String CheckoutPage(Model model) {
+        model.addAttribute("categories", ViewModelUtils.getCategories());
+        List<CartDto> carts = cartService.findByUserid(ViewModelUtils.getUser().getId());
+        int sum = 0;
+        for (CartDto cart : carts) {
+            sum += cart.getTotal();
         }
+
+        model.addAttribute("carts", carts);
+        model.addAttribute("sum", sum);
         return "views/web/checkout";
     }
 }

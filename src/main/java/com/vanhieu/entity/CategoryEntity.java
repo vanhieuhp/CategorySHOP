@@ -20,6 +20,9 @@ public class CategoryEntity extends BaseEntity{
     @OneToMany(mappedBy = "category")
     private List<ItemEntity> items = new ArrayList<>();
 
+    @OneToMany(mappedBy = "blogCategory")
+    private List<BlogEntity> blogs = new ArrayList<>();
+
     public String getName() {
         return name;
     }

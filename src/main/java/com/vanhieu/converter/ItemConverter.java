@@ -13,8 +13,8 @@ public class ItemConverter {
     public ItemDto toDto(ItemEntity entity) {
         ItemDto dto = mapper.map(entity, ItemDto.class);
         dto.setCategoryCode(entity.getCategory().getCode());
-        dto.setCreatedBy(entity.getCreateBy());
-        dto.setCreatedDate(entity.getCreateDate());
+        dto.setCreatedBy(entity.getCreatedBy());
+        dto.setCreatedDate(entity.getCreatedDate());
             return dto;
     }
 

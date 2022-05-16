@@ -1,6 +1,8 @@
 package com.vanhieu.security;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -28,7 +31,11 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private String determineTargetUrl(Authentication authentication) {
         String url = "";
-        List<String> roles = SecurityUtils.getAuthorities();
+        List<String> roles = new ArrayList<>();
+        List<GrantedAuthority> authorities = (List<GrantedAuthority>) authentication.getAuthorities();
+        for (GrantedAuthority authority : authorities) {
+            roles.add(authority.getAuthority());
+        }
         if (isAdmin(roles)) {
             url = "/ADMIN/home";
         } else if (isUser(roles)) {

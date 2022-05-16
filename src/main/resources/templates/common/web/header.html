@@ -36,9 +36,10 @@
                                 </ul>
                             </div>
                             <div sec:authorize="isAuthenticated()" class="header__top__right__language">
+                                <img class="myUserImage" th:src="@{'/image/user/' +${#httpServletRequest.remoteUser} +'.jpg'}">
                                 <div style="font-size: 16px">[[${#httpServletRequest.remoteUser}]]</div>
                                 <ul>
-                                    <li><a href="#"><i class="fa fa-user"></i> Profile</a></li>
+                                    <li><a th:href="@{/WEBPAGE/profile}"><i class="fa fa-user"></i> Profile</a></li>
                                     <li><a th:href="@{/WEBPAGE/shoppingCart}"><i class="fa fa-cart-plus"></i> Cart</a></li>
                                     <li><a th:href="@{/logout}"><i class="fa fa-sign-out"></i> Logout</a></li>
                                 </ul>
@@ -62,30 +63,23 @@
                     <nav class="header__menu">
                         <ul>
                             <li id="idHome" ><a th:href="@{/WEBPAGE}">Home</a></li>
-                            <li id="idShopGrid" ><a th:href="@{/WEBPAGE/shopGrid}">Shop</a></li>
-                            <li id="idShopCart" ><a >Pages</a>
-                                <ul class="header__menu__dropdown">
-                                    <li><a th:href="@{/WEBPAGE/shoppingCart}">Shopping Cart</a></li>
-<!--                                    <li><a th:href="@{/WEBPAGE/checkout}">Check Out</a></li>-->
-                                    <li><a th:href="@{/blog-details.html}">Blog Details</a></li>
-                                </ul>
-                            </li>
-                            <li id="idBlog" ><a href="./blog.html">Blog</a></li>
-                            <li id="idContact" ><a href="./contact.html">Contact</a></li>
+                            <li id="idShopGrid" ><a th:href="@{/WEBPAGE/common/shopGrid}">Shop</a></li>
+                            <li id="idBlog" ><a th:href="@{/WEBPAGE/common/blogPage}">Blog</a></li>
+                            <li id="idContact" ><a th:href="@{/WEBPAGE/common/contact}">Contact</a></li>
                         </ul>
                     </nav>
                 </div>
                 <div class="col-lg-3">
                     <div class="header__cart">
                         <ul>
-                            <li><a th:href="@{/WEBPAGE/shoppingCart}">
+                            <li><a onclick="checkAuthed()">
                                 <i class="fa fa-shopping-bag"></i>
                                 <th:block th:if="${carts != null}">
                                     <span>[[${carts.size}]]</span>
                                 </th:block>
                             </a></li>
                         </ul>
-                        <a class="header__cart__price" th:unless="${carts != null}" th:href="@{/WEBPAGE/shoppingCart}">
+                        <a class="header__cart__price" th:unless="${carts != null}" onclick="checkAuthed()">
                             <span>Shopping Cart</span>
                         </a>
                         <span class="header__cart__price" th:if="${carts != null}">Total: $[[${sum}]]</span></span>
@@ -97,12 +91,22 @@
             </div>
         </div>
     </header>
-    <script crossorigin="anonymous"
-            integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
     <script th:inline="javascript">
         var active = [[${active}]];
         var element = document.getElementById(active);
-        element.classList.add("active");
+        if (element != null) {
+            element.classList.add("active");
+        }
+
+        function checkAuthed() {
+            var authen = [[${#httpServletRequest.remoteUser}]];
+            if (authen == null) {
+                checkLogin();
+            } else {
+                window.location.href = "/WEBPAGE/shoppingCart";
+            }
+        }
     </script>
 </div>
 </body>

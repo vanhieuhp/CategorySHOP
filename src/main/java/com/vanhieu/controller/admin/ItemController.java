@@ -30,12 +30,10 @@ public class ItemController {
                            HttpServletRequest request,
                            Model model) {
         ItemDto itemModel = new ItemDto();
-        itemModel.setPage(page);
-        itemModel.setLimit(limit);
-        Pageable pageable = PageRequest.of(itemModel.getPage() - 1, itemModel.getLimit());
+        Pageable pageable = PageRequest.of(page - 1, limit);
         itemModel.setListResult(itemService.findAll(pageable));
         itemModel.setTotalItem(itemService.count());
-        itemModel.setTotalPage((int) Math.ceil( (double) itemModel.getTotalItem() / itemModel.getLimit()));
+        itemModel = PageUtils.getModel(itemModel, page, limit);
         String message = request.getParameter("message");
         if (message != null) {
             Map<String, String> messages = MessageUtils.getMessage(message);

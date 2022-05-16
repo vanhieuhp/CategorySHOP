@@ -17,6 +17,7 @@ public class UserConverter {
 
     public UserDto toDto(UserEntity entity) {
         UserDto userDto = new UserDto();
+        userDto.setImage(entity.getImage());
         userDto.setUsername(entity.getUsername());
         userDto.setFullname(entity.getFullname());
         userDto.setPassword(entity.getPassword());
@@ -31,7 +32,6 @@ public class UserConverter {
             roleDtos.add(roleDto);
         }
         userDto.setRoles(roleDtos);
-        System.out.println(userDto.toString());
         return userDto;
     }
 

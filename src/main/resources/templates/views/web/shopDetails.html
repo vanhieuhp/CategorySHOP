@@ -13,18 +13,13 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-3">
-                        <div class="hero__categories" style="border-radius: 8px;">
+                        <div class="hero__categories leafCategories">
                             <div class="hero__categories__all">
                                 <i class="fa fa-bars"></i>
                                 <span>All Categories</span>
                             </div>
                             <ul>
-                                <li><a href="#">Fresh Meat</a></li>
-                                <li><a href="#">Vegetables</a></li>
-                                <li><a href="#">Fresh Fruit</a></li>
-                                <li><a href="#">Drink</a></li>
-                                <li><a href="#">Seafood</a></li>
-                                <li><a href="#">Fast Food</a></li>
+                                <li th:each = "category : ${categories}"><a th:href="@{'/WEBPAGE/common/shopGrid?id=' + ${category.id}}">[[${category.name}]]</a></li>
                             </ul>
                         </div>
                     </div>
@@ -63,8 +58,8 @@
                         </div>
                         <div class="product__details__pic__slider owl-carousel">
                             <th:block th:each="item : ${items}">
-                                <a th:href="@{'/WEBPAGE/shopDetails/' + ${item.id} }" >
-                                    <img th:src="@{'/web/img/product/' + ${item.getCategoryCode} + '/'+ ${item.getImage} + '.jpg'}">
+                                <a th:href="@{'/WEBPAGE/common/shopDetails/' + ${item.id} }" >
+                                    <img class="shopGrid_detail_related_img" th:src="@{'/web/img/product/' + ${item.getCategoryCode} + '/'+ ${item.getImage} + '.jpg'}">
 
                                 </a>
                             </th:block>
@@ -94,7 +89,7 @@
                             </div>
                         </div>
                         <button type="button" id="bAdd" class="site-btn" style="border-radius: 8px">Add To Card</button>
-                        <a href="#" class="heart-icon" style="font-size: 14px; color: #f80808; background: #faa7a7; border-radius: 50%;"><span class="icon_heart_alt"></span></a>
+                        <a id="heart-icon" class="heart-icon" onclick="heartOnClick(this.id)" style=" cursor: pointer;font-size: 14px; border-radius: 50%;"><span class="icon_heart_alt"></span></a>
                         <ul>
                             <li><b>Availability</b> <span>In Stock</span></li>
                             <li><b>Shipping</b> <span>1 day shipping. <samp>Free pickup today</samp></span></li>
@@ -196,16 +191,19 @@
     <script th:inline="javascript">
         var itemId = [[${itemModel.id}]];
         var username = [[${#httpServletRequest.remoteUser}]];
+        console.log(username);
         $('#bAdd').click(function (e) {
             e.preventDefault();
-            var numOfItem = $('#numOfItem').val();
-
-            var data = {};
-            data["itemId"] = itemId;
-            data["username"] = username;
-            data["quantity"] = numOfItem;
-
-            add(data);
+            if (username == null) {
+                checkLogin();
+            } else {
+                var numOfItem = $('#numOfItem').val();
+                var data = {};
+                data["itemId"] = itemId;
+                data["username"] = username;
+                data["quantity"] = numOfItem;
+                add(data);
+            }
         })
 
         function add(data) {
@@ -218,21 +216,22 @@
                 success: function (result) {
                     Swal.fire({
                             title: 'Add Item success!',
-                            text: 'Continue to buy',
+                            text: 'Let\'s checkout',
                             icon: 'success',
                             showConfirmButton: true,
                             showCancelButton: true,
-                            cancelButtonColor: '#dd2222',
+                            cancelButtonColor: '#6ca9d9',
                             confirmButtonColor: '#7fad39',
-                            confirmButtonText: 'Ok'
+                            confirmButtonText: 'Checkout',
+                            cancelButtonText: 'Buy more'
                     }).then((result) => {
-                        if (!result.isConfirmed) {
+                        if (result.isConfirmed) {
                             window.location.href = "/WEBPAGE/shoppingCart";
                         }
                     });
                 },
                 error: function (error) {
-                    alert("error");
+                    console.log("error");
                 }
             });
         }
@@ -250,7 +249,6 @@
                 },
                 error: function (error) {
                     console.log("error!")
-                    // window.location.href = "/WEBPAGE/shoppingCart";
                 }
             });
         }

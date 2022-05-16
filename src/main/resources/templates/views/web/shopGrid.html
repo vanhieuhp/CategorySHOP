@@ -7,11 +7,37 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <section class="product spad">
+    <section class="hero">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                </div>
+                <div class="col-lg-9">
+                    <div class="hero__search">
+                        <div class="hero__search__form">
+                            <form action="#">
+                                <input type="text" placeholder="What do yo u need?">
+                                <button type="submit" class="site-btn">SEARCH</button>
+                            </form>
+                        </div>
+                        <div class="hero__search__phone">
+                            <div class="hero__search__phone__icon">
+                                <i class="fa fa-phone"></i>
+                            </div>
+                            <div class="hero__search__phone__text">
+                                <h5>+65 11.188.888</h5>
+                                <span>support 24/7 time</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="product">
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 col-md-5">
-
                     <div class="sidebar">
                         <div class="hero__categories leafCategories">
                             <div class="hero__categories__all">
@@ -19,8 +45,9 @@
                                 <span>All Categories</span>
                             </div>
                             <ul id="categories">
-                                <li class="shopGridCategory" th:each="category : ${categories}" onclick="showItems(this.id)"
-                                    th:id="${category.id} + '_category'" th:value="${category.id}">[[${category.name}]]</li>
+                                <li th:each="category : ${categories}" >
+                                    <span class="shopGridCategory" th:attr="onclick=|showItems(${category.id})|" th:id="${category.id} + '_category'" >[[${category.name}]]</span>
+                                </li>
                             </ul>
                         </div>
                         <div class="sidebar__item sidebar__item__color--option">
@@ -66,60 +93,73 @@
                 </div>
                 <div class="col-lg-9 col-md-7">
                     <div class="row" id="product">
-                        <div class="col-lg-4 col-md-6 col-sm-6" th:each="item : ${items.listResult}">
-                            <div class="featured__item">
-                                <div class="featured__item__pic set-bg">
-                                    <img th:src="'/web/img/product/' + ${item.categoryCode} +'/' + ${item.image} + '.jpg' " alt="">
-                                    <ul class="featured__item__pic__hover">
-                                        <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                        <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                        <li><a th:href="@{'/WEBPAGE/shopDetails/' + ${item.id} }"><i class="fa fa-shopping-cart"></i></a></li>
-                                    </ul>
-                                </div>
-                                <div  class="featured__item__text">
-                                    <a style="cursor: pointer" th:href="@{'/WEBPAGE/shopDetails/' + ${item.id} }">
-                                        <h6>[[${item.name}]]</h6>
-                                        <h5>[[${item.price}]] $</h5>
-                                        <h5 style="color:forestgreen;">see details</h5>
-                                    </a>
-                                </div>
-                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </section>
+    <section class="from-blog spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title from-blog__title">
+                        <h2>From The Blog</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div th:each="blog : ${recentBlogs}" class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="blog__item">
+                        <div class="blog__item__pic">
+                            <img class="blogImage" th:src="'/web/img/blog/' + ${blog.category.code} + '/' + ${blog.image} + '.jpg'" alt="">
+                        </div>
+                        <div class="blog__item__text">
+                            <ul>
+                                <li><i class="fa fa-calendar-o"></i> [[${blog.createdDate}]]</li>
+                                <li><i class="fa fa-comment-o"></i> 5</li>
+                            </ul>
+                            <h5><a th:href="@{'/WEBPAGE/common/blogDetail/' + ${blog.id}}">[[${blog.title}]]</a></h5>
+                            <p class="blog_text_content">[[${blog.shortDescription}]]</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    <script crossorigin="anonymous"
-            integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
     <script th:inline="javascript">
-        var categoryId = [[${categoryId}]];
-        if (categoryId == null) {
-            categoryId = "1_category";
+        var id = [[${categoryId}]];
+        if (id == null) {
+            id = 1;
+
         }
-        active(categoryId);
-        showItems(categoryId);
+        console.log(id);
+        showItems(id);
+        active(id);
         function showItems(id) {
-            var categoryId = $("#" + id).val();
-            $("#categories>li").removeClass("myActive");
+            $("#categories>li>span").removeClass("myActive");
             active(id);
-            getItems(categoryId);
+            getItems(id);
         }
 
         function getItems(id) {
-            var strUrl = '/WEBPAGE/category?categoryId='+ id;
+            var strUrl = '/api/WEBPAGE/category?categoryId='+ id;
             $.ajax({url: strUrl, type: 'get'
             }).done(function(responseJSon) {
                 var product = $("#product");
                 product.replaceWith(responseJSon);
-                active();
             }).fail(function(responseJSon) {
                 console.log("error");
             })
         }
 
         function active(id) {
+            id = id + "_category";
+            console.log(id);
             var element = document.getElementById(id);
+            console.log(element);
             element.classList.add("myActive");
         }
     </script>

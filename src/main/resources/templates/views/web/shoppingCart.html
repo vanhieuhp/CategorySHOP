@@ -69,21 +69,17 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-lg-6">
                     <div class="shoping__cart__btns">
                         <a class="primary-btn cart-btn" th:href="@{/WEBPAGE}">CONTINUE SHOPPING</a>
-                        <input type="button" id="updateCarts" value="Update Carts"
-                               class="primary-btn cart-btn cart-btn-right" name="updateCarts"/>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="shoping__continue">
-                        <div class="shoping__discount">
-                            <h5>Discount Codes</h5>
-                            <form action="#">
-                                <input placeholder="Enter your coupon code" type="text">
-                                <button class="site-btn" type="submit">APPLY COUPON</button>
-                            </form>
+                        <div class="shoping__continue">
+                            <div class="shoping__discount">
+                                <h5>Discount Codes</h5>
+                                <form action="#">
+                                    <input placeholder="Enter your coupon code" type="text">
+                                    <button id="bCounpon" class="site-btn" type="button" onclick="bCoupon()">APPLY COUPON</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -94,7 +90,7 @@
                             <li>Subtotal <input disabled id="subTotal" th:value="'$'+${sum}" /></li>
                             <li>Total <input disabled id="total" th:value="'$'+${sum}" /></li>
                         </ul>
-                        <button onclick="checkout(this.id)" type="button" class="primary-btn" id="bCheckout">Process To Checkout</button>
+                        <button onclick="checkout()" type="button" class="primary-btn" id="bCheckout">Process To Checkout</button>
                     </div>
                 </div>
             </div>
@@ -103,33 +99,24 @@
     <script crossorigin="anonymous"
             integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
     <script th:inline="javascript">
-        var idClick;
         var tempQuantity = 0;
         var sum = [[${sum}]];
 
-        $("#updateCarts").click(function (e) {
-            e.preventDefault();
-            var formData = $("#formSubmit").serializeArray();
+        function updateCart(id){
             var data = {};
-
-            $.each(formData, function(i, v) {
-
-                data[""+v.name+""] = v.value;
-                if (i % 2 == 1) {
-                    update(data);
-                    data = {};
-                }
-            })
-        })
+                data["quantity"] = $("#" +id + "_quantity").val();
+                data["id"] = id;
+                update(data);
+        };
 
         function editQuantity(id) {
-            idClick = id;
             var quantity = $("#" + id + "_quantity").val();
             var price = $("#" + id + "_price").val();
             sum = sum - (tempQuantity * price) + (quantity * price);
             document.getElementById(id + "_total").value = "$" + quantity * price;
             document.getElementById("subTotal").value = "$" + sum;
             document.getElementById("total").value = "$" + sum;
+            updateCart(id);
         }
 
         function decrease(id) {
@@ -187,32 +174,11 @@
             });
         }
 
-        function update(data) {
-            $.ajax({
-                url: '/api/cart',
-                type: 'PUT',
-                contentType: 'application/json; charset=utf-8',
-                data: JSON.stringify(data),
-                success: function (result) {
-                    window.location.href = "/WEBPAGE/shoppingCart";
-                },
-                error: function (error) {
-                    Swal.fire({
-                        title: 'Error System',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        showConfirmButton: false,
-                        cancelButtonColor: '#d33',
-                        CancelButtonText: 'Ok'
-                    })
-                }
-            });
-        }
-
-        function checkout(id) {
+        function checkout() {
             var total = $("#total").val();
             total = total.substring(1);
             if (total == 0) {
+                console.log("hello");
                 Swal.fire({
                     title: 'You have not purchased any items yet',
                     icon: 'warning',
@@ -225,28 +191,17 @@
                     confirmButtonText: 'Ok'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = "/WEBPAGE/shopGrid";
+                        window.location.href = "/WEBPAGE/common/shopGrid";
                     } else {
                         return false;
                     }
                 });
-                console.log("hello");
+            } else {
+                window.location.href = "/WEBPAGE/checkout";
             }
-            // var formData = $("#formSubmit").serializeArray();
-            // var data = {};
-            // $.each(formData, function(i, v) {
-            //     data[""+v.name+""] = v.value;
-            //     if (i % 2 == 1) {
-            //         updateBeforeCheckOut(data);
-            //         data = {};
-            //     }
-            // })
-            // var user = [[${#httpServletRequest.remoteUser}]];
-            // var url = "/WEBPAGE/checkout?&user=" + user;
-            // window.location.href = url;
         }
 
-        function updateBeforeCheckOut(data) {
+        function update(data) {
             $.ajax({
                 url: '/api/cart',
                 type: 'PUT',
@@ -257,6 +212,16 @@
                 error: function (error) {
                     console.log("error!");
                 }
+            });
+        }
+
+        function bCoupon() {
+            Swal.fire({
+                title: 'Your coupon is out of date',
+                icon: 'warning',
+                showConfirmButton: true,
+                confirmButtonColor: '#ddb822',
+                confirmButtonText: 'Ok'
             });
         }
     </script>

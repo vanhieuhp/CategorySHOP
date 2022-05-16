@@ -39,19 +39,19 @@ public abstract class BaseEntity {
         return id;
     }
 
-    public Date getCreateDate() {
+    public Date getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreatedDate(Date createDate) {
         this.createdDate = createDate;
     }
 
-    public String getCreateBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreateBy(String createBy) {
+    public void setCreatedBy(String createBy) {
         this.createdBy = createBy;
     }
 

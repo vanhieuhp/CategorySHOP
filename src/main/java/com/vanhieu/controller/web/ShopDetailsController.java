@@ -1,7 +1,10 @@
 package com.vanhieu.controller.web;
 
 import com.vanhieu.dto.ItemDto;
+import com.vanhieu.service.IBlogService;
+import com.vanhieu.service.ICategoryService;
 import com.vanhieu.service.IItemService;
+import com.vanhieu.util.ViewModelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,8 +19,21 @@ public class ShopDetailsController {
     @Autowired
     private IItemService itemService;
 
-    @GetMapping("/WEBPAGE/shopDetails/{id}")
+    @Autowired
+    private IBlogService blogService;
+
+    @Autowired
+    private ICategoryService categoryService;
+
+    @GetMapping("/WEBPAGE/common/shopDetails/{id}")
     public String showPageDetails(@PathVariable("id") Long id, Model model) {
+        if (ViewModelUtils.getCategories()  == null) {
+            ViewModelUtils.setCategories(categoryService.findAll());
+        }
+        if (ViewModelUtils.getRecentBlogs() == null) {
+            ViewModelUtils.setRecentBlogs(blogService.getRecentBlogs(3));
+        }
+
         ItemDto itemModel = itemService.getOne(id);
         List<ItemDto> items = itemService.findByCategoryCode(itemModel.getCategoryCode(), 7);
         for (int i = 0; i < items.size(); i++) {
@@ -25,6 +41,7 @@ public class ShopDetailsController {
                 items.remove(i);
             }
         }
+        model.addAttribute("categories", ViewModelUtils.getCategories());
         model.addAttribute("itemModel", itemModel);
         model.addAttribute("items", items);
         return "views/web/shopDetails";

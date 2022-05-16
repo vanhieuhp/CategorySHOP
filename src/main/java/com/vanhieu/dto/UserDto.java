@@ -4,6 +4,7 @@ import java.util.List;
 
 public class UserDto extends AbstractDto<UserDto>{
 
+    private String image;
     private String username;
     private String fullname;
     private String password;
@@ -66,5 +67,13 @@ public class UserDto extends AbstractDto<UserDto>{
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

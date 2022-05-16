@@ -14,7 +14,7 @@ public class AccountController {
 
     @GetMapping("/login")
     public String showLoginPage() {
-        return "views/login";
+        return "views/account/login";
     }
 
     @GetMapping(value="/logout")
@@ -28,6 +28,12 @@ public class AccountController {
 
     @GetMapping(value = "/register")
     public String showRegisterPage() {
-        return "views/register";
+        return "views/account/register";
     }
+
+    @GetMapping(value = "/forgetPassword")
+    public String showForgetPasswordPage() {
+        return "views/account/forgetPassword";
+    }
+
 }

@@ -8,6 +8,9 @@ import java.util.List;
 @Table(name = "user")
 public class UserEntity extends BaseEntity{
 
+    @Column(name = "image", nullable = false)
+    private String image;
+
     @Column(name = "username", nullable = false)
     private String username;
 
@@ -33,6 +36,9 @@ public class UserEntity extends BaseEntity{
 
     @OneToMany(mappedBy = "userOfBill")
     private List<BillEntity> bills = new ArrayList<>();
+
+    @OneToMany(mappedBy = "authorBlog")
+    private List<BlogEntity> blogs = new ArrayList<>();
 
     public String getUsername() {
         return username;
@@ -84,5 +90,13 @@ public class UserEntity extends BaseEntity{
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

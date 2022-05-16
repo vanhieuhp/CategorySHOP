@@ -12,9 +12,17 @@ public class UserAPI {
     private IUserService userService;
 
     @PostMapping("/api/user")
-    public UserDto createUser(@RequestBody UserDto userDto) {
-        System.out.println("hello mvc");
-        return userService.save(userDto);
+    public String createUser(@RequestBody UserDto userDto) {
+        String result = "";
+        if (userService.getUserByUsername(userDto.getUsername()) != null) {
+            result = "1";
+        } else if (userService.getUserByEmail(userDto.getEmail()) != null) {
+            result = "2";
+        } else {
+            userService.save(userDto);
+            result = "3";
+        }
+        return result;
     }
 
     @PutMapping("/api/user")
@@ -25,5 +33,17 @@ public class UserAPI {
     @DeleteMapping("/api/user")
     public void DeleteUser(@RequestBody Long[] ids) {
         userService.delete(ids);
+    }
+
+    @PutMapping("/api/forgetPassword")
+    public String changPassword(@RequestBody UserDto userDto) {
+        StringBuilder result = new StringBuilder("");
+        if (userService.getUserByUsernameAndEmail(userDto.getUsername(), userDto.getEmail()) != null) {
+            userService.changePassword(userDto, userDto.getPassword());
+            result.append("Your password: " + userDto.getPassword());
+        } else {
+            result.append("false");
+        }
+        return  result.toString();
     }
 }

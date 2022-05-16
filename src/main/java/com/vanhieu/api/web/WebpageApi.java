@@ -19,7 +19,7 @@ public class WebpageApi {
     @Autowired
     private IItemService itemService;
 
-    @GetMapping("/WEBPAGE/category")
+    @GetMapping("/api/WEBPAGE/category")
     public String showPages(Model model, HttpServletRequest request ) {
         Pageable pageable = PageRequest.of(0, 20);
         Long id = Long.valueOf(request.getParameter("categoryId"));
@@ -29,15 +29,15 @@ public class WebpageApi {
             String s = "<div class=\"col-lg-3 col-md-4 col-sm-6 mix oranges fresh-meat\">\n" +
                     "       <div class=\"featured__item\">\n" +
                     "           <div class=\"featured__item__pic set-bg\">\n" +
-                    "               <img src=\"/web/img/product/" + item.getCategoryCode() + "/" + item.getImage() + ".jpg\" alt=\"\">\n" +
+                    "               <img class=\"home_item_image\" class=\"shop_grid_image \" src=\"/web/img/product/" + item.getCategoryCode() + "/" + item.getImage() + ".jpg\" alt=\"\">\n" +
                     "                   <ul class=\"featured__item__pic__hover\">\n" +
                     "                       <li><a href=\"#\"><i class=\"fa fa-heart\"></i></a></li>\n" +
                     "                       <li><a href=\"#\"><i class=\"fa fa-retweet\"></i></a></li>\n" +
-                    "                       <li><a href=\"/WEBPAGE/shopDetails/" + item.getId() + "\"><i class=\"fa fa-shopping-cart\"></i></a></li>\n" +
+                    "                       <li><a href=\"/WEBPAGE/common/shopDetails/" + item.getId() + "\"><i class=\"fa fa-shopping-cart\"></i></a></li>\n" +
                     "                   </ul>\n" +
                     "            </div>" +
                     "           <div class=\"featured__item__text\">\n" +
-                    "               <a href=\"/WEBPAGE/shopDetails/" + item.getId() + "\">\n" +
+                    "               <a href=\"/WEBPAGE/common/shopDetails/" + item.getId() + "\">\n" +
                     "                   <h6>"+ item.getName() +"</h6>\n" +
                     "                   <h5>"+ item.getPrice() +" $</h5>\n" +
                     "                   <h5 style=\"color:forestgreen;\">see details</h5>\n" +

@@ -85,53 +85,21 @@
             integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
     <script th:inline="javascript">
         function order(id) {
-            var checkOrder = true;
-            var formData = $("#formSubmit").serializeArray();
-            $.each(formData, function(i, v) {
-                if (v.value == "") {
-                    Swal.fire({
-                        title: 'You must enter all the fields',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        showConfirmButton: false,
-                        cancelButtonColor: '#dd2222',
-                        cancelButtonText: 'Ok'
-                    })
-                    checkOrder = false;
-                    return false;
-                }
-            });
-            if (!checkEmail()) {
-                checkOrder = false;
+            var check = true;
+            check = checkAllFieldFilled(check);
+            if (check) {
+                check = checkEmail(check);
             }
-            if (checkOrder) {
-                var data = {};
+            if (check) {
+                check = checkPassword(check);
+            }
+            if (check) {
+                var data = getFormData();
                 var total = $("#total").val();
                 total = total.substring(1);
-                data["username"] = [[${#httpServletRequest.remoteUser}]];
                 data["total"] = total;
-                $.each(formData, function (i, v) {
-                    data[""+v.name+""] = v.value;
-                })
+                console.log(data);
                 add(data);
-            }
-        }
-
-        function checkEmail() {
-            var email = $("#email").val();
-            var check = typeof email.checkValidity === 'function' ? email.checkValidity() : /\S+@\S+\.\S+/.test(email);
-            if (!check) {
-                Swal.fire({
-                    title: 'your email is not match format!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    showConfirmButton: false,
-                    cancelButtonColor: '#dd2222',
-                    cancelButtonText: 'Ok'
-                });
-                return false;
-            }else {
-                return true;
             }
         }
 
@@ -150,8 +118,11 @@
                         showConfirmButton: true,
                         confirmButtonColor: '#7fad39',
                         confirmButtonText: 'Ok'
+                    }).then((result)=>{
+                        if (result.isConfirmed) {
+                            window.location.href = "/WEBPAGE";
+                        }
                     });
-                    window.location.href = "/WEBPAGE";
                 },
                 error: function (error) {
                     Swal.fire({

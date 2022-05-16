@@ -1,9 +1,10 @@
 package com.vanhieu.controller.web;
 
-import com.vanhieu.dto.CategoryDto;
 import com.vanhieu.dto.ItemDto;
+import com.vanhieu.service.IBlogService;
 import com.vanhieu.service.ICategoryService;
 import com.vanhieu.service.IItemService;
+import com.vanhieu.util.ViewModelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @Controller
 public class ShopGridController {
@@ -21,22 +21,29 @@ public class ShopGridController {
     private IItemService itemService;
 
     @Autowired
+    private IBlogService blogService;
+
+    @Autowired
     private ICategoryService categoryService;
 
-    @GetMapping("/WEBPAGE/shopGrid")
+    @GetMapping("/WEBPAGE/common/shopGrid")
     public String showShopGrid(Model model, HttpServletRequest request) {
-
+        if (ViewModelUtils.getCategories()  == null) {
+            ViewModelUtils.setCategories(categoryService.findAll());
+        }
+        if (ViewModelUtils.getRecentBlogs() == null) {
+            ViewModelUtils.setRecentBlogs(blogService.getRecentBlogs(3));
+        }
         ItemDto items = new ItemDto();
         Pageable pageable = PageRequest.of(0, 8);
         items.setListResult(itemService.findAll(pageable));
-        List<CategoryDto> categories = categoryService.findAll();
-
         if (request.getParameter("id") != null) {
-            String id = request.getParameter("id") + "_category";
+            String id = request.getParameter("id");
             model.addAttribute("categoryId", id);
         }
 
-        model.addAttribute("categories", categories);
+        model.addAttribute("categories", ViewModelUtils.getCategories());
+        model.addAttribute("recentBlogs", ViewModelUtils.getRecentBlogs());
         model.addAttribute("items", items);
         model.addAttribute("active", "idShopGrid");
         return "/views/web/shopGrid";

@@ -11,8 +11,8 @@
     <groupId>com.vanhieu</groupId>
     <artifactId>demo-spring</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>demo-spring</name>
-    <description>demo-spring</description>
+    <name>Category-Shop</name>
+    <description>Category-Shop</description>
     <properties>
         <java.version>17</java.version>
         <sitemesh.version>2.4.2</sitemesh.version>

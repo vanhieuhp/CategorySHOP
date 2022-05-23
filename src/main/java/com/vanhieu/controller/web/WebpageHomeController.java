@@ -32,7 +32,7 @@ public class WebpageHomeController {
 
     @Autowired private IBlogService blogService;
 
-    @GetMapping("/WEBPAGE")
+    @GetMapping({"/WEBPAGE", "/"})
     public String showPage(Model model, HttpServletRequest request, HttpServletResponse response) {
 
         ItemDto items = new ItemDto();

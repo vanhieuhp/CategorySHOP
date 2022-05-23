@@ -131,10 +131,6 @@
     <script crossorigin="anonymous" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
     <script th:inline="javascript">
         var id = [[${categoryId}]];
-        if (id == null) {
-            id = 1;
-
-        }
         showItems(id);
         active(id);
         function showItems(id) {

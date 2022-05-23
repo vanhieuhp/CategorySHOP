@@ -37,11 +37,11 @@ public class ShopGridController {
         ItemDto items = new ItemDto();
         Pageable pageable = PageRequest.of(0, 8);
         items.setListResult(itemService.findAll(pageable));
+        String id = "1";
         if (request.getParameter("id") != null) {
-            String id = request.getParameter("id");
-            model.addAttribute("categoryId", id);
+            id = request.getParameter("id");
         }
-
+        model.addAttribute("categoryId", id);
         model.addAttribute("categories", ViewModelUtils.getCategories());
         model.addAttribute("recentBlogs", ViewModelUtils.getRecentBlogs());
         model.addAttribute("items", items);
